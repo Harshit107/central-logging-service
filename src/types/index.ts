@@ -2,7 +2,14 @@ export type LogLevel = 'error' | 'fatal' | 'info' | 'debug' | 'warn';
 
 export type UserDataType = 'notification' | 'otp' | 'link' | 'custom';
 
-export type UserDataStatus = 'queued' | 'dispatched' | 'failed' | 'acknowledged';
+export type UserDataStatus =
+  | 'queued'
+  | 'dispatched'
+  | 'delivered'
+  | 'acknowledged'
+  | 'opened'
+  | 'failed'
+  | 'bounced';
 
 export interface IErrorLog {
   _id?: string;
@@ -85,6 +92,15 @@ export interface CreateUserDataLogDTO {
   status?: UserDataStatus;
   metadata?: Record<string, any>;
   timestamp?: string | Date;
+}
+
+export interface UpdateUserDataLogDTO {
+  status?: UserDataStatus;
+  metadata?: Record<string, any>;
+  recipient?: string;
+  subject?: string;
+  type?: UserDataType;
+  app?: string;
 }
 
 export interface PaginationMeta {

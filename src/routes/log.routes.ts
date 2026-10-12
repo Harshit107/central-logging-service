@@ -14,4 +14,8 @@ router.post(ROUTES.LOGS.USER_DATA, requireLoggingApiKey, logController.postUserD
 router.get(ROUTES.LOGS.USER_DATA, requireLoggingApiKey, logController.getRecentUserDataLogs);
 router.get(ROUTES.LOGS.USER_DATA_BY_ID, requireLoggingApiKey, logController.getUserDataLogs);
 
+// Protect log update endpoints with authentication
+router.patch(ROUTES.LOGS.USER_DATA_BY_ID, requireLoggingApiKey, logController.updateUserDataLog);
+router.put(ROUTES.LOGS.USER_DATA_BY_ID, requireLoggingApiKey, logController.updateUserDataLog);
+
 export default router;

@@ -21,6 +21,7 @@ import {
   CreateErrorLogDTO,
   CreateInfoLogDTO,
   CreateUserDataLogDTO,
+  UpdateUserDataLogDTO,
   UserDataLogRetrievalResult,
 } from "../types";
 
@@ -148,4 +149,94 @@ export const getRecentUserDataLogs = async (limit = 20): Promise<IUserDataLogDoc
     .sort({ createdAt: -1 })
     .limit(limit)
     .lean()) as any;
+};
+
+/**
+ * Updates User-Data Log(s) by Message ID
+ */
+export const updateUserDataLogsByMessageId = async (
+  messageId: string,
+  updateData: UpdateUserDataLogDTO
+): Promise<{ matchedCount: number; modifiedCount: number; records: any[] }> => {
+  if (!isValidMessageId(messageId)) {
+    throw new APIError(
+      ERROR_MESSAGES[ERROR_CODES.INVALID_MESSAGE_ID],
+      400,
+      ERROR_CODES.INVALID_MESSAGE_ID
+    );
+  }
+
+  const updateFields: Record<string, any> = {};
+
+  if (updateData.status) {
+    const validStatuses = Object.values(USER_DATA_STATUSES);
+    const normalizedStatus = updateData.status.toLowerCase().trim() as any;
+    if (!validStatuses.includes(normalizedStatus)) {
+      throw new APIError(
+        `Invalid status '${updateData.status}'. Allowed statuses: ${validStatuses.join(", ")}`,
+        400,
+        ERROR_CODES.VALIDATION_ERROR
+      );
+    }
+    updateFields.status = normalizedStatus;
+  }
+
+  if (updateData.recipient) {
+    updateFields.recipient = updateData.recipient.toLowerCase().trim();
+  }
+
+  if (updateData.subject) {
+    updateFields.subject = updateData.subject.trim();
+  }
+
+  if (updateData.type) {
+    const validTypes = Object.values(USER_DATA_TYPES);
+    const normalizedType = updateData.type.toLowerCase().trim() as any;
+    if (validTypes.includes(normalizedType)) {
+      updateFields.type = normalizedType;
+    }
+  }
+
+  if (updateData.app) {
+    updateFields.app = updateData.app.trim();
+  }
+
+  if (updateData.metadata && typeof updateData.metadata === "object") {
+    // Sanitize metadata
+    const cleanMeta = sanitizeMetadata(updateData.metadata);
+    for (const [k, v] of Object.entries(cleanMeta)) {
+      updateFields[`metadata.${k}`] = v;
+    }
+  }
+
+  if (Object.keys(updateFields).length === 0) {
+    throw new APIError(
+      "No valid update parameters provided (provide status, metadata, recipient, subject, or app)",
+      400,
+      ERROR_CODES.MISSING_REQUIRED_FIELDS
+    );
+  }
+
+  const result = await UserDataLog.updateMany(
+    { messageId: messageId.trim() },
+    { $set: updateFields }
+  );
+
+  if (result.matchedCount === 0) {
+    throw new APIError(
+      `No user-data logs found with messageId: ${messageId}`,
+      404,
+      ERROR_CODES.NO_RECORDS_FOUND
+    );
+  }
+
+  const updatedRecords = await UserDataLog.find({ messageId: messageId.trim() })
+    .sort({ createdAt: -1 })
+    .lean();
+
+  return {
+    matchedCount: result.matchedCount,
+    modifiedCount: result.modifiedCount,
+    records: updatedRecords as any,
+  };
 };

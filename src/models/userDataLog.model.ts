@@ -50,12 +50,7 @@ const userDataLogSchema = new Schema<IUserDataLogDocument>(
     },
     status: {
       type: String,
-      enum: [
-        USER_DATA_STATUSES.QUEUED,
-        USER_DATA_STATUSES.DISPATCHED,
-        USER_DATA_STATUSES.FAILED,
-        USER_DATA_STATUSES.ACKNOWLEDGED,
-      ],
+      enum: Object.values(USER_DATA_STATUSES),
       default: USER_DATA_STATUSES.DISPATCHED,
       index: true,
     },

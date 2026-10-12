@@ -27,10 +27,11 @@ app.use(helmet());
 app.use(
   cors({
     origin: "*",
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "x-logging-key", "x-api-key"],
   })
 );
+
 
 // Rate Limiting (protecting ingestion & retrieval from DoS)
 const limiter = rateLimit({

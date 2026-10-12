@@ -49,8 +49,11 @@ export const USER_DATA_TYPES = Object.freeze({
 export const USER_DATA_STATUSES = Object.freeze({
   QUEUED: "queued",
   DISPATCHED: "dispatched",
-  FAILED: "failed",
+  DELIVERED: "delivered",
   ACKNOWLEDGED: "acknowledged",
+  OPENED: "opened",
+  FAILED: "failed",
+  BOUNCED: "bounced",
 } as const);
 
 export const SUCCESS_MESSAGES = Object.freeze({
@@ -58,6 +61,7 @@ export const SUCCESS_MESSAGES = Object.freeze({
   ERROR_LOG_SAVED: "Error log recorded successfully",
   INFO_LOG_SAVED: "Informational log recorded successfully",
   USER_DATA_LOG_SAVED: "User-data log recorded successfully",
+  USER_DATA_LOG_UPDATED: "User-data log updated successfully",
   RECORDS_RETRIEVED: "Matching records retrieved successfully",
 });
 

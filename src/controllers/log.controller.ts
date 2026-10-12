@@ -107,3 +107,27 @@ export const getRecentUserDataLogs = catchAsync(async (req: Request, res: Respon
     error: null,
   });
 });
+
+/**
+ * Update User-Data Log(s) by Message ID
+ * PATCH/PUT /api/v1/logs/user-data/:messageId
+ */
+export const updateUserDataLog = catchAsync(async (req: Request, res: Response): Promise<void> => {
+  const rawMessageId = req.params.messageId;
+  const messageId = Array.isArray(rawMessageId) ? rawMessageId[0] : rawMessageId;
+
+  const result = await logService.updateUserDataLogsByMessageId(messageId, req.body);
+
+  res.status(200).json({
+    success: true,
+    data: {
+      messageId,
+      matchedCount: result.matchedCount,
+      modifiedCount: result.modifiedCount,
+      records: result.records,
+    },
+    message: SUCCESS_MESSAGES.USER_DATA_LOG_UPDATED,
+    error: null,
+  });
+});
+
