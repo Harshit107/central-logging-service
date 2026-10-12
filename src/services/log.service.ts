@@ -116,18 +116,26 @@ export const getUserDataLogsByMessageId = async (
     throw new APIError(ERROR_MESSAGES[ERROR_CODES.INVALID_MESSAGE_ID], 400, ERROR_CODES.INVALID_MESSAGE_ID);
   }
 
+  const rawId = messageId.trim();
+  const cleanId = rawId.replace(/^<|>$/g, '');
+  const withBrackets = `<${cleanId}>`;
+
   const pageNum = Math.max(1, parseInt(options.page, 10) || 1);
   const limitNum = Math.min(100, Math.max(1, parseInt(options.limit, 10) || 50));
   const skip = (pageNum - 1) * limitNum;
 
+  // Bracket-agnostic search matches both raw, clean, and wrapped forms
+  const searchFilter = { messageId: { $in: [rawId, cleanId, withBrackets] } };
+
   const [records, total] = await Promise.all([
-    UserDataLog.find({ messageId: messageId.trim() })
+    UserDataLog.find(searchFilter)
       .sort({ createdAt: 1 })
       .skip(skip)
       .limit(limitNum)
       .lean(),
-    UserDataLog.countDocuments({ messageId: messageId.trim() }),
+    UserDataLog.countDocuments(searchFilter),
   ]);
+
 
   return {
     records: records as any,
@@ -217,8 +225,13 @@ export const updateUserDataLogsByMessageId = async (
     );
   }
 
+  const rawId = messageId.trim();
+  const cleanId = rawId.replace(/^<|>$/g, '');
+  const withBrackets = `<${cleanId}>`;
+  const searchFilter = { messageId: { $in: [rawId, cleanId, withBrackets] } };
+
   const result = await UserDataLog.updateMany(
-    { messageId: messageId.trim() },
+    searchFilter,
     { $set: updateFields }
   );
 
@@ -230,9 +243,10 @@ export const updateUserDataLogsByMessageId = async (
     );
   }
 
-  const updatedRecords = await UserDataLog.find({ messageId: messageId.trim() })
+  const updatedRecords = await UserDataLog.find(searchFilter)
     .sort({ createdAt: -1 })
     .lean();
+
 
   return {
     matchedCount: result.matchedCount,

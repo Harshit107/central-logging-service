@@ -21,12 +21,17 @@ export const generateMessageId = (): string => {
 
 /**
  * Validates a messageId candidate
+ * Supports:
+ * - RFC 2822 standard email Message-IDs (e.g., <uuid@domain.com> or uuid@domain.com)
+ * - Custom and generated message IDs (e.g., msg_1728839281_abc, UUIDs)
  */
 export const isValidMessageId = (id: any): boolean => {
   if (!isNonEmptyString(id)) return false;
   const sanitized = id.trim();
-  return /^[a-zA-Z0-9_-]{3,128}$/.test(sanitized);
+  // Match standard IDs, RFC 2822 message-ids with optional angle brackets, domain parts, +, =, -, _, .
+  return /^[<]?[a-zA-Z0-9_.\-+=@:%]{2,200}[>]?$/.test(sanitized);
 };
+
 
 const SENSITIVE_KEY_PATTERNS = [
   /password/i,
