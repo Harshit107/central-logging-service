@@ -17,10 +17,18 @@ export const ROUTES = Object.freeze({
   }),
 });
 
+export const ECOSYSTEM_URLS = Object.freeze({
+  LOGGER_API: "https://logger-api.harshit107.online",
+  LOGGER_UI: "https://logger.harshit107.online",
+  MAIL_API: "https://freelyemail-api.harshit107.online",
+  SHOWCASE_UI: "https://freelyemail.harshit107.online",
+} as const);
+
 export const DEFAULT_CONFIG = Object.freeze({
   PORT: 5001,
   SERVICE_NAME: "central-logging-service",
   HEADER_KEY_NAME: "x-logging-key",
+  ECOSYSTEM_URLS,
 });
 
 export const LOG_LEVELS = Object.freeze({
