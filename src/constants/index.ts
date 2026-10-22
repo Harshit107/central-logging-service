@@ -17,11 +17,15 @@ export const ROUTES = Object.freeze({
   }),
 });
 
+import DOMAINS from "../config/domain";
+
+export { DOMAINS };
+
 export const ECOSYSTEM_URLS = Object.freeze({
-  LOGGER_API: "https://logger-api.harshit107.online",
-  LOGGER_UI: "https://logger.harshit107.online",
-  MAIL_API: "https://freelyemail-api.harshit107.online",
-  SHOWCASE_UI: "https://freelyemail.harshit107.online",
+  LOGGER_API: DOMAINS.EMAIL.LOGGER_API,
+  LOGGER_UI: DOMAINS.EMAIL.LOGGER_UI,
+  MAIL_API: DOMAINS.EMAIL.API,
+  SHOWCASE_UI: DOMAINS.EMAIL.SHOWCASE_UI,
 } as const);
 
 export const DEFAULT_CONFIG = Object.freeze({
