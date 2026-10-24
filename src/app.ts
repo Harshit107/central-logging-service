@@ -75,6 +75,20 @@ app.get(ROUTES.HEALTH, (req: Request, res: Response) => {
   });
 });
 
+// Server Maintainer Wake-up & Health Check Routes
+app.get(["/startserver", "/startServer", "/checkserver", "/checkServer"], (req: Request, res: Response) => {
+  if (req.headers.accept && req.headers.accept.includes("application/json")) {
+    return res.json({
+      status: "online",
+      server: "Central Logging API",
+      message: "Hey Developer! Central Logging Service is working fine, Go ahead!",
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString()
+    });
+  }
+  res.send("<h1>Hey Developer! Central Logging Service is working fine, Go aHead!</h1>");
+});
+
 // Handle 404 Route Not Found
 app.use((req: Request, res: Response) => {
   res.status(404).json({
